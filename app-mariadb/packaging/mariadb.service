@@ -1,0 +1,16 @@
+[Unit]
+Description=MariaDB container
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill mariadb
+ExecStartPre=-/usr/bin/docker rm mariadb
+ExecStartPre=-/usr/bin/docker pull mariadb
+ExecStart=/usr/bin/docker run --env MYSQL_ROOT_PASSWORD=my-secret-pw --name mariadb --net host --volume /etc/my.cnf.d:/etc/mysql/conf.d:ro --volume /var/lib/mysql:/var/lib/mysql:rw mariadb
+ExecStartPost=/bin/bash -c "mkdir -p /var/run/mariadb; while [ -z `/usr/bin/docker ps -qf 'name=mariadb'` ]; do sleep 1; done; /usr/bin/docker inspect -f '{{ .State.Pid }}' mariadb > /var/run/mariadb/mariadb.pid"
+ExecStop=/usr/bin/docker stop mariadb
+ExecStopPost=/bin/rm -f /var/run/mariadb/mariadb.pid
+
+[Install]
+WantedBy=multi-user.target

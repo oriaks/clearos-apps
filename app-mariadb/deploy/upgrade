@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Check phpMyAdmin configuration
+#-------------------------------
+
+CHECK=`grep "^.cfg\[['\"]blowfish_secret['\"]\]" /etc/phpMyAdmin/config.inc.php`
+if [ -z "$CHECK" ]; then
+    logger -p local6.notice -t installer "app-mariadb-core - adding blowfish secret"
+    SECRET=`openssl rand -base64 32 | sed 's/\//_/g'`
+    echo "" >> /etc/phpMyAdmin/config.inc.php
+    echo "// Blowfish secret" >> /etc/phpMyAdmin/config.inc.php
+    echo "\$cfg['blowfish_secret'] = '$SECRET';" >> /etc/phpMyAdmin/config.inc.php
+fi

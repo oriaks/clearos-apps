@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Initialize storage
+#-------------------
+
+/usr/sbin/storage
+
+systemctl enable mariadb.service
+systemctl start mariadb.service
