@@ -1,0 +1,2 @@
+# clearos-apps
+ClearOS Applications
