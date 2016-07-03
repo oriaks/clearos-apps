@@ -1,0 +1,16 @@
+[Unit]
+Description=Openfire container
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill openfire
+ExecStartPre=-/usr/bin/docker rm openfire
+ExecStartPre=-/usr/bin/docker pull bunnyfu/openfire
+ExecStart=/usr/bin/docker run --name openfire --net host --volume /var/lib/openfire:/var/lib/openfire:rw bunnyfu/openfire
+ExecStartPost=/bin/bash -c "while [ -z `/usr/bin/docker ps -qf 'name=openfire'` ]; do sleep 1; done; /usr/bin/docker inspect -f '{{ .State.Pid }}' openfire > /var/run/openfire.pid"
+ExecStop=/usr/bin/docker stop openfire
+ExecStopPost=/bin/rm -f /var/run/openfire.pid
+
+[Install]
+WantedBy=multi-user.target
